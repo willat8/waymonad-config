@@ -24,7 +24,6 @@ Reach us at https://github.com/ongy/waymonad
 {-# LANGUAGE NumDecimals #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE PackageImports #-}
-{-# LANGUAGE LambdaCase #-}
 module Main
 where
 
@@ -79,6 +78,7 @@ import Waymonad.Protocols.InputInhibit
 import Waymonad.Protocols.IdleInhibit
 import Waymonad.Protocols.Screenshooter
 import Waymonad.Types (WayHooks (..), OutputEffective (..))
+import Waymonad.Protocols.Background
 import Waymonad.Types.Core (Seat (seatKeymap), WayKeyState (..), keystateAsInt)
 import Waymonad.Utility (sendMessage, focusNextOut, sendTo, closeCurrent, closeCompositor)
 import Waymonad.Utility.Base (doJust)
@@ -170,12 +170,16 @@ bindings modi =
     , (([modi], keysym_Left), sendMessage $ DecreaseRatio 0.1)
     , (([modi], keysym_Right), sendMessage $ IncreaseRatio 0.1)
 
-    , (([modi], keysym_Return), spawn "konsole")
+    , (([modi], keysym_Return), spawn "weston-terminal")
     , (([modi], keysym_d), spawn "rofi -show run")
     , (([modi], keysym_w), spawnVWatch)
+    -- , (([modi], keysym_x), spawn "physlock")
     , (([modi], keysym_t), spawn "mpc toggle")
     , (([modi, Shift], keysym_Left), spawn "mpc prev")
     , (([modi, Shift], keysym_Right), spawn "mpc next")
+
+    , (([], keysym_XF86MonBrightnessUp), spawn "brightnessctl set +5%")
+    , (([], keysym_XF86MonBrightnessDown), spawn "brightnessctl set 5-%")
 
     , (([modi], keysym_n), focusNextOut)
     , (([modi], keysym_q), closeCurrent)
@@ -186,34 +190,31 @@ bindings modi =
 
 xReady :: Way vs Text ()
 xReady = do
-    spawn "monky | dzen2 -x 0 -w 1280"
-    spawnOn "1" "qutebrowser" []
-    spawnOn "2" "konsole" ["-e", "glirc2"]
-    spawnX11On "4" "firefox" []
+    (spawn "monky | dzen2")
+    spawn "background /home/ongy/.wallpaper"
 
 myConf :: WlrModifier -> WayUserConf (ViewSet Text) Text
 myConf modi = WayUserConf
     { wayUserConfWorkspaces  = workspaces
     , wayUserConfLayouts     = sameLayout . avoidStruts . mkSmartBorders 2 . mkMirror . mkTFull $ (Tall 0.5 ||| TwoPane 0.5 ||| Spiral 0.618)
-    , wayUserConfManagehook  = XWay.overrideXRedirect <> manageSpawnOn <> manageX11SpawnOn
+    , wayUserConfManagehook  = XWay.overrideXRedirect <> manageSpawnOn
     , wayUserConfEventHook   = idleDPMSHandler
     , wayUserConfKeybinds    = bindings modi
     , wayUserConfPointerbinds = makeDefaultMappings modi
 
     , wayUserConfInputAdd    = \ptr -> do
-        setLibinputOptions [LibinputOpts "Logitech USB Trackball" [ScrollMethod LI.ScrollOnButtonDown, ScrollButton 0x113]] ptr
+        setLibinputOptions [LibinputOpts "ETPS/2 Elantech Touchpad" [MiddleEmulation LI.MiddleEmulationEnabled, TapToClick LI.TapEnabled]] ptr
         attachDevice ptr "seat0"
     , wayUserConfDisplayHook =
         [ getFuseBracket $ IPCGroup [("idle", Right (idleIPC (Proxy :: Proxy IdleEvent)))]
         , getGammaBracket
         , getFilterBracket filterUser
         , baseTimeBracket
-        , getStartupBracket (spawn "redshift -m wayland" >> spawn "mako" >> spawn "background /usr/local/share/wallpapers")
-        , envBracket [ ("PULSE_SERVER", "zelda.ongy")
+        , getStartupBracket (spawn "redshift -m wayland")
+        , envBracket [ ("MPD_SERVER", "link.ongy")
                      , ("QT_QPA_PLATFORM", "wayland-egl")
                      , ("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
                      , ("QT_WAYLAND_FORCE_DPI", "96")
-                     , ("QUTE_SKIP_WAYLAND_CHECK", "1")
                      -- breaks firefox (on arch) :/
                      --, ("GDK_BACKEND", "wayland")
                      , ("SDL_VIDEODRIVER", "wayland")
@@ -221,12 +222,13 @@ myConf modi = WayUserConf
                      ]
         , getIdleInihibitBracket
         , getInputInhibitBracket
+        , getBackgroundBracket
         ]
-    , wayUserConfBackendHook = [getIdleBracket 6e5]
+    , wayUserConfBackendHook = [getIdleBracket 3e5]
     , wayUserConfPostHook    = [getScreenshooterBracket]
     , wayUserConfCoreHooks   = WayHooks
         { wayHooksVWSChange       = wsScaleHook <> (liftIO . hPrint stderr)
-        , wayHooksOutputMapping   = enterLeaveHook <> handlePointerSwitch <> SM.mappingChangeEvt <> constStrutHandler [("DVI-D-1", Struts 20 0 0 0)] <> (liftIO . hPrint stderr)
+        , wayHooksOutputMapping   = enterLeaveHook <> handlePointerSwitch <> SM.mappingChangeEvt <> constStrutHandler [("LVDS-1", Struts 20 0 0 0)] <> (liftIO . hPrint stderr)
         , wayHooksSeatWSChange    = SM.wsChangeLogHook <> handleKeyboardSwitch <> (liftIO . hPrint stderr)
         , wayHooksSeatOutput      = SM.outputChangeEvt <> handlePointerPull <> (liftIO . hPrint stderr)
         , wayHooksSeatFocusChange = focusFollowPointer <> (liftIO . hPrint stderr)
@@ -242,15 +244,7 @@ myConf modi = WayUserConf
     , wayUserconfColor = Color 0.5 0 0 1
     , wayUserconfColors = mempty
     , wayUserconfFramerHandler = Nothing
-    , wayUserconfXKBMap = \case
-        "Ideazon Merc Stealth" -> RMLVO 
-            { rules = Nothing
-            , model = Nothing
-            , layout = Just "de"
-            , variant = Just ""
-            , options = Just "caps:escape"
-            }
-        _ ->  RMLVO 
+    , wayUserconfXKBMap = const RMLVO
             { rules = Nothing
             , model = Nothing
             , layout = Just "us,de"
