@@ -146,7 +146,7 @@ getModi :: IO WlrModifier
 getModi = do
     way <- lookupEnv "WAYLAND_DISPLAY"
     x11 <- lookupEnv "DISPLAY"
-    pure . maybe keysym_z (const keysym_z) $ way <|> x11
+    pure . maybe Shift (const Ctrl) $ way <|> x11
 
 spawnVWatch :: Way vs ws ()
 spawnVWatch = doJust getSeat $ \seat ->
