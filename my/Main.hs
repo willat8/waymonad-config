@@ -45,7 +45,7 @@ import Graphics.Wayland.WlRoots.Render.Color (Color (..))
 import Data.String (IsString)
 import Fuse.Main
 import Waymonad (Way, KeyBinding, getSeat)
-import Waymonad.Actions.Spawn (spawn, manageSpawnOn, spawnOn)
+import Waymonad.Actions.Spawn (spawn, manageSpawnOn)
 import Waymonad.Actions.Startup.Environment
 import Waymonad.Actions.Startup.Generic
 import Waymonad.GlobalFilter
