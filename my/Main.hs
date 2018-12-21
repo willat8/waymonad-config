@@ -196,6 +196,7 @@ myConf :: WlrModifier -> WayUserConf (ViewSet Text) Text
 myConf modi = WayUserConf
     { wayUserConfWorkspaces  = workspaces
     , wayUserConfLayouts     = sameLayout . avoidStruts . mkSmartBorders 2 . mkMirror . mkTFull $ (Tall 0.5 ||| TwoPane 0.5 ||| Spiral 0.618)
+    , wayUserConfManagehook  = manageSpawnOn
     , wayUserConfEventHook   = idleDPMSHandler
     , wayUserConfKeybinds    = bindings modi
     , wayUserConfPointerbinds = makeDefaultMappings modi
