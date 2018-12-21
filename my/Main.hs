@@ -94,7 +94,6 @@ import qualified Data.IntMap.Strict as IM
 
 import qualified Waymonad.Hooks.OutputAdd as H
 import qualified Waymonad.Hooks.SeatMapping as SM
-import qualified Waymonad.Shells.XWayland as XWay
 import qualified Waymonad.Shells.XdgShell as Xdg
 import qualified Waymonad.Shells.XdgShellv6 as Xdgv6
 import qualified Waymonad.Shells.WlShell as Wl
@@ -197,7 +196,6 @@ myConf :: WlrModifier -> WayUserConf (ViewSet Text) Text
 myConf modi = WayUserConf
     { wayUserConfWorkspaces  = workspaces
     , wayUserConfLayouts     = sameLayout . avoidStruts . mkSmartBorders 2 . mkMirror . mkTFull $ (Tall 0.5 ||| TwoPane 0.5 ||| Spiral 0.618)
-    , wayUserConfManagehook  = XWay.overrideXRedirect <> manageSpawnOn
     , wayUserConfEventHook   = idleDPMSHandler
     , wayUserConfKeybinds    = bindings modi
     , wayUserConfPointerbinds = makeDefaultMappings modi
@@ -235,7 +233,7 @@ myConf modi = WayUserConf
         , wayHooksNewOutput       = H.outputAddHook
         , wayHooksOutputEffective = layoutOutput . getChangedOutput <> const Layer.forceLayout
         }
-    , wayUserConfShells = [Xdg.makeShell, Xdgv6.makeShell, Wl.makeShell, XWay.makeShellAct xReady, Layer.makeShell]
+    , wayUserConfShells = [Xdg.makeShell, Xdgv6.makeShell, Wl.makeShell, Layer.makeShell]
     , wayUserConfLog = pure ()
     , wayUserConfOutputAdd = \out -> do
         setPreferdMode (outputRoots out) $
