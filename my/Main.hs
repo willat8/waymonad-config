@@ -46,7 +46,6 @@ import Data.String (IsString)
 import Fuse.Main
 import Waymonad (Way, KeyBinding, getSeat)
 import Waymonad.Actions.Spawn (spawn, manageSpawnOn, spawnOn)
-import Waymonad.Actions.Spawn.X11 (spawnX11On, manageX11SpawnOn)
 import Waymonad.Actions.Startup.Environment
 import Waymonad.Actions.Startup.Generic
 import Waymonad.GlobalFilter
