@@ -213,8 +213,8 @@ myConf modi = WayUserConf
                      , ("QT_QPA_PLATFORM", "wayland-egl")
                      , ("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
                      , ("QT_WAYLAND_FORCE_DPI", "96")
-                     -- breaks firefox (on arch) :/
-                     --, ("GDK_BACKEND", "wayland")
+                     , ("GDK_BACKEND", "wayland")
+                     , ("MOZ_GTK_TITLEBAR_DECORATION", "client")
                      , ("SDL_VIDEODRIVER", "wayland")
                      , ("CLUTTER_BACKEND", "wayland")
                      ]
