@@ -58,7 +58,6 @@ import Waymonad.IdleDPMS
 import Waymonad.IdleManager
 import Waymonad.Input (attachDevice)
 import Waymonad.Input.Cursor.Bindings (makeDefaultMappings)
-import Waymonad.Input.Libinput
 import Waymonad.Input.Seat (useClipboardText, setSeatKeybinds, resetSeatKeymap)
 import Waymonad.Layout (layoutOutput)
 import Waymonad.Layout.AvoidStruts
