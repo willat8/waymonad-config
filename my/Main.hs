@@ -96,7 +96,6 @@ import qualified Waymonad.Shells.XdgShell as Xdg
 import qualified Waymonad.Shells.XdgShellv6 as Xdgv6
 import qualified Waymonad.Shells.WlShell as Wl
 import qualified Waymonad.Shells.Layers as Layer
-import qualified System.InputDevice as LI
 import qualified Waymonad.Shells.Pseudo.Multi as Multi
 import qualified Data.Text as T
 
