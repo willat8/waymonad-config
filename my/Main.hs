@@ -214,6 +214,8 @@ myConf modi = WayUserConf
                      , ("MOZ_GTK_TITLEBAR_DECORATION", "client")
                      , ("SDL_VIDEODRIVER", "wayland")
                      , ("CLUTTER_BACKEND", "wayland")
+                     -- i965_dri.so not working properly under waymonad
+                     , ("LIBGL_ALWAYS_SOFTWARE", "true")
                      ]
         , getIdleInihibitBracket
         , getInputInhibitBracket
